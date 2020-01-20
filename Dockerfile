@@ -1,7 +1,10 @@
-FROM opensuse/leap:15.1 AS build
+FROM registry.suse.de/suse/templates/images/sle-15/images/my-container:latest AS build
 
 WORKDIR /opt
 RUN mkdir /opt/rootfs
+RUN zypper -n rm  container-suseconnect
+RUN zypper -n  ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15:/GA/standard/SUSE:SLE-15:GA.repo
+RUN zypper -n  ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15:/Update/standard/SUSE:SLE-15:Update.repo
 
 RUN zypper -n in tar gzip hostname libaio1 libnuma1 cmake git gcc gcc-c++ \
 	libaio-devel boost-devel openssl-devel ncurses-devel readline-devel \
@@ -60,7 +63,10 @@ RUN curl -o xtrabackup.tar.gz https://www.percona.com/downloads/Percona-XtraBack
 	make -j$(nproc) install
 
 # Build runtime container
-FROM opensuse/leap:15.1
+FROM registry.suse.de/suse/templates/images/sle-15/images/my-container:latest
+RUN zypper -n rm  container-suseconnect
+RUN zypper -n  ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15:/GA/standard/SUSE:SLE-15:GA.repo
+RUN zypper -n  ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15:/Update/standard/SUSE:SLE-15:Update.repo
 
 LABEL name="Percona XtraDB Cluster" \
 	release="5.7" \
