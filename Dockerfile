@@ -97,5 +97,5 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 3306 4567 4568
 CMD ["mysqld"]
-RUN zypper -n in hostname libaio libatomic1
+RUN zypper -n in hostname libaio libatomic1 awk
 RUN zypper -n rr 1 && zypper -n rr 1
