@@ -18,7 +18,7 @@ RUN curl -o source.tar.gz https://www.percona.com/downloads/Percona-XtraDB-Clust
 	cmake . \
 		-DBUILD_CONFIG=mysql_release \
 		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
-		-DCMAKE_INSTALL_PREFIX=/opt/rootfs \
+		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DINSTALL_MYSQLTESTDIR= \
 		-DWITH_EMBEDDED_SERVER=OFF \
 		-DWITH_INNODB_DISALLOW_WRITES=ON \
@@ -34,7 +34,7 @@ RUN curl -o source.tar.gz https://www.percona.com/downloads/Percona-XtraDB-Clust
 		-DWITH_WSREP=ON \
 		-DWITH_ZLIB=system && \
 	make -j$(nproc) && \
-	make -j$(nproc) install
+	DESTDIR=/opt/rootfs make -j$(nproc) install
 RUN mkdir -p /opt/rootfs/etc/mysql && cp -r Percona-XtraDB-Cluster-5.7.28-31.41/build-ps/ubuntu/extra/percona-xtradb-cluster.conf.d /opt/rootfs/etc/mysql
 
 # Build galera
@@ -54,13 +54,13 @@ RUN curl -o xtrabackup.tar.gz https://www.percona.com/downloads/Percona-XtraBack
 	cd build && \
 	cmake .. \
 		-DBUILD_CONFIG=xtrabackup_release \
-		-DCMAKE_INSTALL_PREFIX=/opt/rootfs \
+		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DINSTALL_MYSQLTESTDIR= \
 		-DDOWNLOAD_BOOST=1 \
 		-DWITH_BOOST=libboost \
 		-DWITH_MAN_PAGES=OFF && \
 	make -j$(nproc) && \
-	make -j$(nproc) install
+	DESTDIR=/opt/rootfs make -j$(nproc) install
 
 # Build runtime container
 FROM registry.suse.de/suse/templates/images/sle-15/images/my-container:latest
