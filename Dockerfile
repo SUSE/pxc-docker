@@ -1,8 +1,8 @@
-FROM registry.suse.de/suse/templates/images/sle-15/images/my-container:latest AS build
+FROM registry.suse.com/suse/sle15:15.1 AS build
 
 WORKDIR /opt
 RUN mkdir /opt/rootfs
-RUN zypper -n rm  container-suseconnect && zypper -n  ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15:/GA/standard/SUSE:SLE-15:GA.repo && zypper -n  ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15:/Update/standard/SUSE:SLE-15:Update.repo
+RUN zypper -n rm  container-suseconnect && zypper -n  ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15:/GA/standard/SUSE:SLE-15:GA.repo && zypper -n  ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15:/Update/standard/SUSE:SLE-15:Update.repo && zypper -n  ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15-SP1:/GA/standard/SUSE:SLE-15-SP1:GA.repo && zypper -n  ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15-SP1:/Update/standard/SUSE:SLE-15-SP1:Update.repo
 
 RUN zypper -n in tar gzip hostname libaio1 libnuma1 cmake git gcc gcc-c++ \
 	libaio-devel boost-devel openssl-devel ncurses-devel readline-devel \
@@ -61,7 +61,7 @@ RUN curl -o xtrabackup.tar.gz https://www.percona.com/downloads/Percona-XtraBack
 	DESTDIR=/opt/rootfs make -j$(nproc) install
 
 # Build runtime container
-FROM registry.suse.de/suse/templates/images/sle-15/images/my-container:latest
+FROM registry.suse.com/suse/sle15:15.1
 RUN zypper -n rm  container-suseconnect && zypper -n  ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15:/GA/standard/SUSE:SLE-15:GA.repo && zypper -n ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15:/Update/standard/SUSE:SLE-15:Update.repo
 
 LABEL name="Percona XtraDB Cluster" \
