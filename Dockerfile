@@ -7,7 +7,7 @@ RUN zypper -n rm  container-suseconnect && zypper -n  ar --refresh http://downlo
 RUN zypper -n in tar gzip hostname libaio1 libnuma1 cmake git gcc gcc-c++ \
 	libaio-devel boost-devel openssl-devel ncurses-devel readline-devel \
 	curl-devel bison socat scons check-devel libboost_program_options1_66_0-devel \
-	curl patch libgcrypt-devel libev-devel
+	curl patch libgcrypt-devel libev-devel vim
 
 # Build Percona XtraDB Cluster
 RUN curl -o source.tar.gz https://www.percona.com/downloads/Percona-XtraDB-Cluster-LATEST/Percona-XtraDB-Cluster-5.7.28-31.41/source/tarball/Percona-XtraDB-Cluster-5.7.28-31.41.tar.gz && \
@@ -42,8 +42,6 @@ RUN cd /opt/Percona-XtraDB-Cluster-*/percona-xtradb-cluster-galera && \
     HOME=$PWD scons tests=0 && \
     install --mode=0644 -D libgalera_smm.so "/opt/rootfs/usr/lib/galera3/libgalera_smm.so"
 
-# TODO: merge
-RUN zypper -n in vim
 # Build XtraBackup
 RUN curl -o xtrabackup.tar.gz https://www.percona.com/downloads/Percona-XtraBackup-2.4/Percona-XtraBackup-2.4.18/source/tarball/percona-xtrabackup-2.4.18.tar.gz && \
 	tar xfv xtrabackup.tar.gz && \
@@ -62,7 +60,7 @@ RUN curl -o xtrabackup.tar.gz https://www.percona.com/downloads/Percona-XtraBack
 
 # Build runtime container
 FROM registry.suse.com/suse/sle15:15.1
-RUN zypper -n rm  container-suseconnect && zypper -n  ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15:/GA/standard/SUSE:SLE-15:GA.repo && zypper -n ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15:/Update/standard/SUSE:SLE-15:Update.repo
+RUN zypper -n rm  container-suseconnect && zypper -n  ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15:/GA/standard/SUSE:SLE-15:GA.repo && zypper -n ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15:/Update/standard/SUSE:SLE-15:Update.repo && zypper -n  ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15-SP1:/GA/standard/SUSE:SLE-15-SP1:GA.repo && zypper -n  ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15-SP1:/Update/standard/SUSE:SLE-15-SP1:Update.repo
 
 LABEL name="Percona XtraDB Cluster" \
 	release="5.7" \
@@ -71,7 +69,7 @@ LABEL name="Percona XtraDB Cluster" \
 	description="Percona XtraDB Cluster is a high availability solution that helps enterprises avoid downtime and outages and meet expected customer experience." \
 	maintainer="Percona Development <info@percona.com>"
 
-RUN zypper -n in which socat vim
+RUN zypper -n in which socat vim hostname libaio libatomic1 awk
 
 # create mysql user/group before mysql installation
 RUN groupadd -g 1001 mysql \
@@ -97,5 +95,4 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 3306 4567 4568
 CMD ["mysqld"]
-RUN zypper -n in hostname libaio libatomic1 awk
 RUN zypper -n rr -a
