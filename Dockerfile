@@ -10,9 +10,9 @@ RUN zypper -n in tar gzip hostname libaio1 libnuma1 cmake git gcc gcc-c++ \
 	curl patch libgcrypt-devel libev-devel vim
 
 # Build Percona XtraDB Cluster
-RUN curl -o source.tar.gz https://www.percona.com/downloads/Percona-XtraDB-Cluster-LATEST/Percona-XtraDB-Cluster-5.7.28-31.41/source/tarball/Percona-XtraDB-Cluster-5.7.28-31.41.tar.gz && \
+RUN curl -o source.tar.gz https://kubecf-sources.s3.amazonaws.com/pxc/Percona-XtraDB-Cluster-5.7.28-31.41.tar.gz && \
 	tar xf /opt/source.tar.gz && \
-	cd Percona-XtraDB-Cluster-5.7.28-31.41 && \
+	cd Percona-XtraDB-Cluster-* && \
 	cmake . \
 		-DBUILD_CONFIG=mysql_release \
 		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
@@ -33,7 +33,7 @@ RUN curl -o source.tar.gz https://www.percona.com/downloads/Percona-XtraDB-Clust
 		-DWITH_ZLIB=system && \
 	make -j$(nproc) && \
 	DESTDIR=/opt/rootfs make -j$(nproc) install
-RUN mkdir -p /opt/rootfs/etc/mysql && cp -r Percona-XtraDB-Cluster-5.7.28-31.41/build-ps/ubuntu/extra/percona-xtradb-cluster.conf.d /opt/rootfs/etc/mysql
+RUN mkdir -p /opt/rootfs/etc/mysql && cp -r Percona-XtraDB-Cluster-*/build-ps/ubuntu/extra/percona-xtradb-cluster.conf.d /opt/rootfs/etc/mysql
 
 # Build galera
 COPY SConstruct.patch /opt
@@ -43,7 +43,7 @@ RUN cd /opt/Percona-XtraDB-Cluster-*/percona-xtradb-cluster-galera && \
     install --mode=0644 -D libgalera_smm.so "/opt/rootfs/usr/lib/galera3/libgalera_smm.so"
 
 # Build XtraBackup
-RUN curl -o xtrabackup.tar.gz https://www.percona.com/downloads/Percona-XtraBackup-2.4/Percona-XtraBackup-2.4.18/source/tarball/percona-xtrabackup-2.4.18.tar.gz && \
+RUN curl -o xtrabackup.tar.gz https://kubecf-sources.s3.amazonaws.com/pxc/percona-xtrabackup-2.4.18.tar.gz && \
 	tar xfv xtrabackup.tar.gz && \
 	cd percona-xtrabackup-*/ && \
 	mkdir build && \
