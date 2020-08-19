@@ -1,5 +1,8 @@
 FROM registry.suse.com/suse/sle15:15.1 AS build
 
+ARG PXC_VERSION=5.7.30-31.43
+ARG XTRABACKUP_VERSION=2.4.20
+
 WORKDIR /opt
 RUN mkdir /opt/rootfs
 RUN zypper -n rm  container-suseconnect && zypper -n  ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15:/GA/standard/SUSE:SLE-15:GA.repo && zypper -n  ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15:/Update/standard/SUSE:SLE-15:Update.repo && zypper -n  ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15-SP1:/GA/standard/SUSE:SLE-15-SP1:GA.repo && zypper -n  ar --refresh http://download.suse.de/ibs/SUSE:/SLE-15-SP1:/Update/standard/SUSE:SLE-15-SP1:Update.repo
@@ -10,9 +13,8 @@ RUN zypper -n in tar gzip hostname libaio1 libnuma1 cmake git gcc gcc-c++ \
 	curl patch libgcrypt-devel libev-devel vim
 
 # Build Percona XtraDB Cluster
-RUN curl -o source.tar.gz https://kubecf-sources.s3.amazonaws.com/pxc/Percona-XtraDB-Cluster-5.7.28-31.41.tar.gz && \
-	tar xf /opt/source.tar.gz && \
-	cd Percona-XtraDB-Cluster-* && \
+RUN curl -o source.tar.gz https://kubecf-sources.s3.amazonaws.com/pxc/Percona-XtraDB-Cluster-${PXC_VERSION}.tar.gz && \
+	tar xf /opt/source.tar.gz --strip-components=1 && \
 	cmake . \
 		-DBUILD_CONFIG=mysql_release \
 		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
@@ -33,17 +35,15 @@ RUN curl -o source.tar.gz https://kubecf-sources.s3.amazonaws.com/pxc/Percona-Xt
 		-DWITH_ZLIB=system && \
 	make -j$(nproc) && \
 	DESTDIR=/opt/rootfs make -j$(nproc) install
-RUN mkdir -p /opt/rootfs/etc/mysql && cp -r Percona-XtraDB-Cluster-*/build-ps/ubuntu/extra/percona-xtradb-cluster.conf.d /opt/rootfs/etc/mysql
+RUN mkdir -p /opt/rootfs/etc/mysql && cp -r build-ps/ubuntu/extra/percona-xtradb-cluster.conf.d /opt/rootfs/etc/mysql
 
 # Build galera
-COPY SConstruct.patch /opt
-RUN cd /opt/Percona-XtraDB-Cluster-*/percona-xtradb-cluster-galera && \
-    patch < /opt/SConstruct.patch && \
+RUN cd percona-xtradb-cluster-galera && \
     HOME=$PWD scons tests=0 && \
     install --mode=0644 -D libgalera_smm.so "/opt/rootfs/usr/lib/galera3/libgalera_smm.so"
 
 # Build XtraBackup
-RUN curl -o xtrabackup.tar.gz https://kubecf-sources.s3.amazonaws.com/pxc/percona-xtrabackup-2.4.18.tar.gz && \
+RUN curl -o xtrabackup.tar.gz https://kubecf-sources.s3.amazonaws.com/pxc/percona-xtrabackup-${XTRABACKUP_VERSION}.tar.gz && \
 	tar xfv xtrabackup.tar.gz && \
 	cd percona-xtrabackup-*/ && \
 	mkdir build && \
