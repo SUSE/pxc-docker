@@ -21,7 +21,7 @@ jobs:
         id: ghcr
         uses: hashicorp/vault-action@v2.0.1
         with:
-          url: https://volt.cap.explore.suse.dev
+          url: https://volt.cap.explore.suse.dev/ui/vault
           method: github
           githubToken: ${{ secrets.VAULT_TOKEN }}
           secrets: |
