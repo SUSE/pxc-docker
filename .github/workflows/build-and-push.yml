@@ -41,7 +41,7 @@ jobs:
         with:
           context: .
           push: true
-	  labels: |
+          labels: |
             org.opencontainers.image.version=${{ env.VERSION }}
             org.opencontainers.image.title=PXC Database
             org.opencontainers.image.url=https://github.com/${{ github.repository }}
