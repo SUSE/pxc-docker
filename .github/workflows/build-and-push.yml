@@ -1,7 +1,7 @@
 name: "Build and push image"
 on:
   push:
-    branches: master
+    branches: ak-kubecf-1490-switch-2-ghcr-gha-test
 jobs:
   main:
     runs-on: ubuntu-latest
