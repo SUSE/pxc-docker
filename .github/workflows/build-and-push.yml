@@ -1,0 +1,42 @@
+name: "Build and push image"
+on:
+  push:
+    branches: master
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: QEmu setup
+        uses: actions/checkout@v2
+
+      - name: Docker buildx setup
+        uses: docker/setup-buildx-action@v1
+
+      - name: GHCR access credentials
+        id: ghcr
+        uses: hashicorp/vault-action@v2.0.1
+        with:
+          url: https://volt.cap.explore.suse.dev/ui/vault/secrets
+          method: github
+          githubToken: ${{ secrets.VaultToken }}
+          caCertificate: ${{ secrets.VaultCert }}
+          secrets: |
+            secret/show/kubecf ghcr-user     | GHCR_USER
+            secret/show/kubecf ghcr-password | GHCR_PASSWORD
+
+      - name: GHCR login
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ steps.ghcr.outputs.GHCR_USER }}
+          password: ${{ steps.ghcr.outputs.GHCR_PASSWORD }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
