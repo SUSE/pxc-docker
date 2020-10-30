@@ -25,7 +25,7 @@ jobs:
           method: github
           githubToken: ${{ secrets.VAULT_TOKEN }}
           secrets: |
-            secret/kubecf ghcr-user     | GHCR_USER
+            secret/kubecf ghcr-user     | GHCR_USER     ;
             secret/kubecf ghcr-password | GHCR_PASSWORD
 
       - name: GHCR login
