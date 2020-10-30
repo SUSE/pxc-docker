@@ -50,4 +50,4 @@ jobs:
             org.opencontainers.image.url=https://github.com/${{ github.repository }}
             org.opencontainers.image.vendor=SUSE Cloud Application Platform
             org.opencontainers.image.description=An image containing the PXC mysql database distribution
-	  tags: ${{ env.IMAGE_TAG }}
+          tags: ${{ env.IMAGE_TAG }}
