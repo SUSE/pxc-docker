@@ -23,8 +23,7 @@ jobs:
         with:
           url: https://volt.cap.explore.suse.dev/ui/vault/secrets
           method: github
-          githubToken: ${{ secrets.VaultToken }}
-          caCertificate: ${{ secrets.VaultCert }}
+          githubToken: ${{ secrets.VAULT_TOKEN }}
           secrets: |
             secret/show/kubecf ghcr-user     | GHCR_USER
             secret/show/kubecf ghcr-password | GHCR_PASSWORD
