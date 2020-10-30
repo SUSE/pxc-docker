@@ -36,6 +36,9 @@ jobs:
           username: ${{ steps.ghcr.outputs.GHCR_USER }}
           password: ${{ steps.ghcr.outputs.GHCR_PASSWORD }}
 
+      - name: Set environment variables
+        run: ./ci/set_environment.sh
+
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
@@ -47,3 +50,4 @@ jobs:
             org.opencontainers.image.url=https://github.com/${{ github.repository }}
             org.opencontainers.image.vendor=SUSE Cloud Application Platform
             org.opencontainers.image.description=An image containing the PXC mysql database distribution
+	  tags: ${{ env.IMAGE_TAG }}
