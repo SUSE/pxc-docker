@@ -21,12 +21,12 @@ jobs:
         id: ghcr
         uses: hashicorp/vault-action@v2.0.1
         with:
-          url: https://volt.cap.explore.suse.dev/secrets
+          url: https://volt.cap.explore.suse.dev
           method: github
           githubToken: ${{ secrets.VAULT_TOKEN }}
           secrets: |
-            secret/kubecf ghcr-user     | GHCR_USER     ;
-            secret/kubecf ghcr-password | GHCR_PASSWORD
+            secrets/secret/kubecf ghcr-user     | GHCR_USER     ;
+            secrets/secret/kubecf ghcr-password | GHCR_PASSWORD
 
       - name: GHCR login
         uses: docker/login-action@v1
