@@ -24,8 +24,8 @@ jobs:
           url: https://volt.cap.explore.suse.dev/
           token: ${{ secrets.VAULT_TOKEN }}
           secrets: |
-            kubecf ghcr-user     | GHCR_USER     ;
-            kubecf ghcr-password | GHCR_PASSWORD
+            secret/kubecf/data ghcr-user     | GHCR_USER     ;
+            secret/kubecf/data ghcr-password | GHCR_PASSWORD
 
       - name: GHCR login
         uses: docker/login-action@v1
